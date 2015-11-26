@@ -21,11 +21,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.audio.Sound;
 
 /**
  * Created by Abraham on 2015-11-25.
  */
 public class gravtest implements Screen, InputProcessor {
+    Sound Sound;
     World world;
     Body player;
     BodyDef bdef;
@@ -41,6 +43,7 @@ public class gravtest implements Screen, InputProcessor {
     Body floor;
 
     public gravtest(Game game) {
+        Sound = Gdx.audio.newSound(Gdx.files.internal("Hitmarker.mp3"));
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
@@ -49,7 +52,7 @@ public class gravtest implements Screen, InputProcessor {
         for (int i = 0; i < 4; i++) {
             spMegaman[i] = new Sprite(taMegaman.findRegion("frame_" + i));
         }
-        world = new World(new Vector2(0, -98.1f), true);
+        world = new World(new Vector2(0, -98f), true);
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -231,6 +234,8 @@ public class gravtest implements Screen, InputProcessor {
         b2dr.render(world, camera.combined);
         batch.begin();
         batch.draw(aPlayer.getKeyFrame(elapsedTime, true), player.getPosition().x, player.getPosition().y - spMegaman[0].getHeight() / 2);
+        if(Gdx.input.justTouched()) //used for dectecting if the screen is clicked
+            Sound.play();
         batch.end();
     }
 
