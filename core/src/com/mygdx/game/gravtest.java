@@ -1,3 +1,5 @@
+//Don helped out in person and with videya game
+//http://www.gamefromscratch.com/post/2014/08/27/LibGDX-Tutorial-13-Physics-with-Box2D-Part-1-A-Basic-Physics-Simulations.aspx
 package com.mygdx.game;
 
 import com.badlogic.gdx.Game;
