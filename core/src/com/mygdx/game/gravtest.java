@@ -23,11 +23,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.audio.Sound;
 
 /**
  * Created by Abraham on 2015-11-25.
  */
 public class gravtest implements Screen, InputProcessor {
+    Sound Sound;
     World world;
     Body player;
     BodyDef bdef;
@@ -43,15 +45,16 @@ public class gravtest implements Screen, InputProcessor {
     Body floor;
 
     public gravtest(Game game) {
+        Sound = Gdx.audio.newSound(Gdx.files.internal("Hitmarker.mp3")); // adding the audio sound
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        taMegaman = new TextureAtlas(Gdx.files.internal("Megaman.txt"));
+        taMegaman = new TextureAtlas(Gdx.files.internal("Megaman.txt")); // adding in the megaman.pack file
 
         for (int i = 0; i < 4; i++) {
             spMegaman[i] = new Sprite(taMegaman.findRegion("frame_" + i));
         }
-        world = new World(new Vector2(0, -98.1f), true);
+        world = new World(new Vector2(0, -98f), true); // making a new wold for gravity, and setting the velocity of the gravity
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -74,7 +77,7 @@ public class gravtest implements Screen, InputProcessor {
             }
         });
         createPlayer();
-        createFloor();
+        createFloor(); // makes the floor
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -82,7 +85,7 @@ public class gravtest implements Screen, InputProcessor {
         aPlayer = new Animation(1 / 8f, spMegaman);
     }
 
-    private void createPlayer() {
+    private void createPlayer() { // player class for the animation of megaman
         bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
 
@@ -90,7 +93,7 @@ public class gravtest implements Screen, InputProcessor {
         bdef.type = BodyDef.BodyType.DynamicBody;
         player = world.createBody(bdef);
 
-        shape.setAsBox(spMegaman[0].getWidth(), spMegaman[0].getHeight() / 2);
+        shape.setAsBox(spMegaman[0].getWidth(), spMegaman[0].getHeight() / 2); // sets the outside hit box around the animation
         fdef = new FixtureDef();
         fdef.shape = shape;
         player.setSleepingAllowed(false);
@@ -98,7 +101,7 @@ public class gravtest implements Screen, InputProcessor {
         player.setGravityScale(1);
     }
 
-    private void createFloor() {
+    private void createFloor() { // creating a floor so megaman will not pass through the ground
         bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
 
@@ -113,7 +116,7 @@ public class gravtest implements Screen, InputProcessor {
         floor.createFixture(fdef);
         floor.setGravityScale(0);
     }
-
+// allowing us to check if button and mouse are being clicked or pressed, also allows us to add action to each button
     /**
      * Called when a key was pressed
      *
@@ -233,6 +236,8 @@ public class gravtest implements Screen, InputProcessor {
         b2dr.render(world, camera.combined);
         batch.begin();
         batch.draw(aPlayer.getKeyFrame(elapsedTime, true), player.getPosition().x, player.getPosition().y - spMegaman[0].getHeight() / 2);
+        if(Gdx.input.justTouched()) //used for dectecting if the screen is clicked
+            Sound.play();
         batch.end();
     }
 
@@ -278,3 +283,4 @@ public class gravtest implements Screen, InputProcessor {
 
     }
 }
+//http://www.gamefromscratch.com/post/2014/08/27/LibGDX-Tutorial-13-Physics-with-Box2D-Part-1-A-Basic-Physics-Simulations.aspx
