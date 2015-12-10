@@ -23,9 +23,6 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.audio.Sound;
 
-/**
- * Created by Abraham on 2015-11-25.
- */
 public class gravtest implements Screen, InputProcessor {
     Sound Sound;
     World world;
@@ -33,6 +30,7 @@ public class gravtest implements Screen, InputProcessor {
     BodyDef bdef;
     FixtureDef fdef;
     Sprite[] spMegaman = new Sprite[4];
+    Sprite[] spBird = new Sprite[4];
     TextureAtlas taMegaman;
     Box2DDebugRenderer b2dr;
     OrthographicCamera camera;
@@ -47,12 +45,12 @@ public class gravtest implements Screen, InputProcessor {
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        taMegaman = new TextureAtlas(Gdx.files.internal("Megaman.txt")); // adding in the megaman.pack file
+        taMegaman = new TextureAtlas(Gdx.files.internal("Bird.txt")); // adding in the megaman.pack file
 
         for (int i = 0; i < 4; i++) {
-            spMegaman[i] = new Sprite(taMegaman.findRegion("frame_" + i));
+            spBird[i] = new Sprite(taMegaman.findRegion("frame_" + i));
         }
-        world = new World(new Vector2(0, -98f), true); // making a new wold for gravity, and setting the velocity of the gravity
+        world = new World(new Vector2(0, -150f), true); // making a new wold for gravity, and setting the velocity of the gravity
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
@@ -80,7 +78,7 @@ public class gravtest implements Screen, InputProcessor {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        aPlayer = new Animation(1 / 8f, spMegaman);
+        aPlayer = new Animation(1 / 8f, spBird);
     }
 
     private void createPlayer() { // player class for the animation of megaman
@@ -91,7 +89,7 @@ public class gravtest implements Screen, InputProcessor {
         bdef.type = BodyDef.BodyType.DynamicBody;
         player = world.createBody(bdef);
 
-        shape.setAsBox(spMegaman[0].getWidth(), spMegaman[0].getHeight() / 2); // sets the outside hit box around the animation
+        shape.setAsBox(spBird[0].getWidth(), spBird[0].getHeight() / 2); // sets the outside hit box around the animation
         fdef = new FixtureDef();
         fdef.shape = shape;
         player.setSleepingAllowed(false);
@@ -160,7 +158,7 @@ public class gravtest implements Screen, InputProcessor {
      */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        player.applyForceToCenter(0, 5000, true);
+        player.applyForceToCenter(0, 200000, true);
         return true;
     }
 
@@ -233,7 +231,8 @@ public class gravtest implements Screen, InputProcessor {
         world.step(1 / 60f, 6, 2);
         b2dr.render(world, camera.combined);
         batch.begin();
-        batch.draw(aPlayer.getKeyFrame(elapsedTime, true), player.getPosition().x, player.getPosition().y - spMegaman[0].getHeight() / 2);
+        //System.out.println(player.getPosition(x,y);
+        batch.draw(aPlayer.getKeyFrame(elapsedTime, true), player.getPosition().x, player.getPosition().y - spBird[0].getHeight() / 2);
         if(Gdx.input.justTouched()) //used for dectecting if the screen is clicked
             Sound.play();
         batch.end();
