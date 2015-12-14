@@ -31,7 +31,7 @@ public class gravtest implements Screen, InputProcessor {
     Body player;
     BodyDef bdef;
     FixtureDef fdef;
-    Sprite[] spMegaman = new Sprite[4];
+    //Sprite[] spMegaman = new Sprite[4];
     Sprite[] spBird = new Sprite[4];
     TextureAtlas taMegaman;
     Box2DDebugRenderer b2dr;

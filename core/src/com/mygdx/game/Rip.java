@@ -15,6 +15,9 @@ public class Rip extends Game {
     int j, nSpeed = 0;
     Music Music;
     Sound Sound;
+    public static final int WIDTH = 460;
+    public static final int HEIGHT = 750;
+    public static final String TITLE = "Dank Bird";
 
     @Override
     public void create() {
