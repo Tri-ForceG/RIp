@@ -8,6 +8,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,9 +32,10 @@ public class gravtest implements Screen, InputProcessor {
     Body player;
     BodyDef bdef;
     FixtureDef fdef;
-    //Sprite[] spMegaman = new Sprite[4];
+    Texture TopTube, BotTube;
     Sprite[] spBird = new Sprite[4];
-    TextureAtlas taMegaman;
+    Sprite sprite;
+    TextureAtlas taBird;
     Box2DDebugRenderer b2dr;
     OrthographicCamera camera;
 
@@ -42,15 +44,16 @@ public class gravtest implements Screen, InputProcessor {
     SpriteBatch batch;
     Body floor;
 
+
     public gravtest(Game game) {
         Sound = Gdx.audio.newSound(Gdx.files.internal("Hitmarker.mp3")); // adding the audio sound
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        taMegaman = new TextureAtlas(Gdx.files.internal("Bird.txt")); // adding in the megaman.pack file
+        taBird = new TextureAtlas(Gdx.files.internal("Bird.txt")); // adding in the megaman.pack file
 
         for (int i = 0; i < 4; i++) {
-            spBird[i] = new Sprite(taMegaman.findRegion("frame_" + i));
+            spBird[i] = new Sprite(taBird.findRegion("frame_" + i));
         }
         world = new World(new Vector2(0, -150f), true); // making a new wold for gravity, and setting the velocity of the gravity
         world.setContactListener(new ContactListener() {
@@ -75,15 +78,35 @@ public class gravtest implements Screen, InputProcessor {
             }
         });
         createPlayer();
-        createFloor(); // makes the floor
+        createFloor();
+        createRoof();
+        createTubeBot();
+        createTubeTop();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         aPlayer = new Animation(1 / 8f, spBird);
     }
+    private void createRoof(){
+        bdef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
 
-    private void createPlayer() { // player class for the animation of megaman
+        bdef.position.set(0, 480);
+        bdef.type = BodyDef.BodyType.StaticBody;
+        floor = world.createBody(bdef);
+
+        shape.setAsBox(Gdx.graphics.getWidth(), 1);
+        fdef = new FixtureDef();
+        fdef.shape = shape;
+        floor.setSleepingAllowed(false);
+        floor.createFixture(fdef);
+        floor.setGravityScale(0);
+
+    }
+
+
+    private void createPlayer() {
         bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
 
@@ -91,12 +114,47 @@ public class gravtest implements Screen, InputProcessor {
         bdef.type = BodyDef.BodyType.DynamicBody;
         player = world.createBody(bdef);
 
-        shape.setAsBox(spBird[0].getWidth(), spBird[0].getHeight() / 2); // sets the outside hit box around the animation
+        shape.setAsBox(spBird[0].getWidth(), spBird[0].getHeight() / 2);
         fdef = new FixtureDef();
         fdef.shape = shape;
         player.setSleepingAllowed(false);
         player.createFixture(fdef);
         player.setGravityScale(1);
+    }
+    private void createTubeBot() {
+        BotTube = new Texture("bottomtube.png");
+        sprite = new Sprite(BotTube);
+        bdef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+
+        bdef.position.set(450, 450);
+        bdef.type = BodyDef.BodyType.StaticBody;
+        player = world.createBody(bdef);
+
+        shape.setAsBox(BotTube.getWidth(), BotTube.getHeight() / 2);
+        fdef = new FixtureDef();
+        fdef.shape = shape;
+        player.setSleepingAllowed(false);
+        player.createFixture(fdef);
+        player.setGravityScale(0);
+    }
+    private void createTubeTop() {
+        TopTube = new Texture("toptube.png");
+        sprite = new Sprite(TopTube);
+
+        bdef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+
+        bdef.position.set(450, 0);
+        bdef.type = BodyDef.BodyType.StaticBody;
+        player = world.createBody(bdef);
+
+        shape.setAsBox(TopTube.getWidth(), TopTube.getHeight() / 2);
+        fdef = new FixtureDef();
+        fdef.shape = shape;
+        player.setSleepingAllowed(false);
+        player.createFixture(fdef);
+        player.setGravityScale(0);
     }
 
     private void createFloor() { // creating a floor so megaman will not pass through the ground
@@ -114,50 +172,26 @@ public class gravtest implements Screen, InputProcessor {
         floor.createFixture(fdef);
         floor.setGravityScale(0);
     }
-// allowing us to check if button and mouse are being clicked or pressed, also allows us to add action to each button
-    /**
-     * Called when a key was pressed
-     *
-     * @param keycode one of the constants in {@link Input.Keys}
-     * @return whether the input was processed
-     */
+
+
     @Override
     public boolean keyDown(int keycode) {
         return false;
     }
 
-    /**
-     * Called when a key was released
-     *
-     * @param keycode one of the constants in {@link Input.Keys}
-     * @return whether the input was processed
-     */
+
     @Override
     public boolean keyUp(int keycode) {
 
         return false;
     }
 
-    /**
-     * Called when a key was typed
-     *
-     * @param character The character
-     * @return whether the input was processed
-     */
     @Override
     public boolean keyTyped(char character) {
         return false;
     }
 
-    /**
-     * Called when the screen was touched or a mouse button was pressed. The button parameter will be {@link Buttons#LEFT} on iOS.
-     *
-     * @param screenX The x coordinate, origin is in the upper left corner
-     * @param screenY The y coordinate, origin is in the upper left corner
-     * @param pointer the pointer for the event.
-     * @param button  the button
-     * @return whether the input was processed
-     */
+
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         player.applyForceToCenter(0, 200000, true);
