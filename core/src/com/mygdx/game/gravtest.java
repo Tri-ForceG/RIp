@@ -25,6 +25,7 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.utils.Array;
 
 public class gravtest implements Screen, InputProcessor {
     Sound Sound;
@@ -43,14 +44,15 @@ public class gravtest implements Screen, InputProcessor {
     Animation aPlayer;
     SpriteBatch batch;
     Body floor;
-//Trying to get this working
+    private Array<Sprite> arsprTopTube;
+    private Array<Sprite> arsprBotTube;
 
     public gravtest(Game game) {
         Sound = Gdx.audio.newSound(Gdx.files.internal("Hitmarker.mp3")); // adding the audio sound
         b2dr = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        taBird = new TextureAtlas(Gdx.files.internal("Bird.txt")); // adding in the megaman.pack file
+        taBird = new TextureAtlas(Gdx.files.internal("Bird.txt"));
 
         for (int i = 0; i < 4; i++) {
             spBird[i] = new Sprite(taBird.findRegion("frame_" + i));
@@ -82,6 +84,8 @@ public class gravtest implements Screen, InputProcessor {
         createRoof();
         createTubeBot();
         createTubeTop();
+        spawnTubesTopTubes();
+        spawnTubesBottomTubes();
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -156,8 +160,46 @@ public class gravtest implements Screen, InputProcessor {
         player.createFixture(fdef);
         player.setGravityScale(0);
     }
+    private void spawnTubesTopTubes() {
+        TopTube = new Texture("toptube.png");
+        sprite = new Sprite(TopTube);
 
-    private void createFloor() { // creating a floor so megaman will not pass through the ground
+        bdef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+
+        bdef.position.set(450, 0);
+        bdef.type = BodyDef.BodyType.StaticBody;
+        player = world.createBody(bdef);
+
+        shape.setAsBox(TopTube.getWidth(), TopTube.getHeight() / 2);
+        fdef = new FixtureDef();
+        fdef.shape = shape;
+        player.setSleepingAllowed(false);
+        player.createFixture(fdef);
+        player.setGravityScale(0);
+    }
+    private void spawnTubesBottomTubes() {
+        BotTube = new Texture("bottomtube.png");
+        sprite = new Sprite(BotTube);
+
+        bdef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+
+        bdef.position.set(450, 450);
+        bdef.type = BodyDef.BodyType.StaticBody;
+        player = world.createBody(bdef);
+
+        shape.setAsBox(BotTube.getWidth(), BotTube.getHeight() / 2);
+        fdef = new FixtureDef();
+        fdef.shape = shape;
+        player.setSleepingAllowed(false);
+        player.createFixture(fdef);
+        player.setGravityScale(0);
+
+
+    }
+
+    private void createFloor() {
         bdef = new BodyDef();
         PolygonShape shape = new PolygonShape();
 
@@ -274,7 +316,7 @@ public class gravtest implements Screen, InputProcessor {
         batch.end();
     }
 
-    /**
+       /**
      * @param width
      * @param height
      * @see ApplicationListener#resize(int, int)
